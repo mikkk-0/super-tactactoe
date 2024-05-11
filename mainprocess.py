@@ -58,6 +58,13 @@ class Game:
             self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.9999, length=200, command=self.changeDiff)
             self.__d_scale.grid(row=1)
             return True
+        else:
+            moves = list(self.__game.possible_moves())
+            if len(moves) == 0:
+                showinfo(title="GAME OVER", message=f"TIE!")
+                self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.9999, length=200, command=self.changeDiff)
+                self.__d_scale.grid(row=1)
+                return True
         return False
 
     def tap_button(self, x, y, r, c):
