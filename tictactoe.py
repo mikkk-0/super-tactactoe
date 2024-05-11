@@ -82,7 +82,7 @@ class TicTacToe:
     def possible_moves(self):
         for x in range(3):
             for y in range(3):
-                if self.get_color(x, y) == Color.N:
+                if self.get_color(x, y) != Color.N:
                     continue
                 yield x, y
 
