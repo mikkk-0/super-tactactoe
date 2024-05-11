@@ -1,4 +1,6 @@
 from enum import Enum
+from random import randint
+from copy import deepcopy
 
 
 class Color(Enum):
@@ -6,6 +8,10 @@ class Color(Enum):
     X = 1,
     O = 2,
     A = 3
+
+
+def getOpponent(color: Color):
+    return Color.X if color == Color.O else Color.O
 
 
 class TicTacToe:
@@ -73,21 +79,43 @@ class TicTacToe:
             result += +1 if winner == Color.X else -1
         return all + (result if move == Color.X else -result)
 
+    def possible_moves(self):
+        for x in range(3):
+            for y in range(3):
+                if self.get_color(x, y) == Color.N:
+                    continue
+                yield x, y
+
 
 class SuperTicTacToe:
     def __init__(self):
         self.__board = [[TicTacToe() for _ in range(3)] for _ in range(3)]
+        self.__next_move = (-1, -1)
+        self.__current_move = Color.X
 
-    def make_move(self, x, y, r, c, color):
-        if not self.__board[x][y].make_move(r, c, color):
+    def make_move(self, x, y, r, c):
+        if (x, y) != self.__next_move and self.__next_move != (-1, -1):
             return False
-        winner = self.__board[x][y].get_winner()
+        if not self.get_game(x, y).make_move(r, c, self.__current_move):
+            return False
+        winner = self.get_game(x, y).get_winner()
         if winner != Color.N:
             self.__board[x][y] = winner
+        if not isinstance(self.get_game(r, c), Color):
+            self.__next_move = (r, c)
+        else:
+            self.__next_move = (-1, -1)
+        self.__current_move = getOpponent(self.__current_move)
         return True
 
     def get_game(self, x, y):
         return self.__board[x][y]
+
+    def getPlayer(self):
+        return self.__current_move
+
+    def is_any(self):
+        return self.__next_move == (-1, -1)
 
     def check_may_win(self, conf):
         colors = set()
@@ -119,20 +147,50 @@ class SuperTicTacToe:
                 return winner
         return Color.N
 
-    def get_delta(self, move=Color.X):
+    def get_delta(self, player=Color.X) -> int:
         result = 0
-        all = 0
+        all_ = 0
         for conf in TicTacToe.get_pos():
             winner = self.check_may_win(conf)
             if winner == Color.N:
                 continue
             if winner == Color.A:
-                all += 1
+                all_ += 1
                 continue
             result += +1 if winner == Color.X else -1
-        result = 3 * (all + (result if move == Color.X else -result))
+        result = 3 * (all_ + (result if player == Color.X else -result))
         for line in self.__board:
             for game in line:
                 if isinstance(game, TicTacToe):
-                    result += game.get_delta(move)
+                    result += game.get_delta(player)
         return result
+
+    def possible_moves(self):
+        if self.__next_move == (-1, -1):
+            for x in range(3):
+                for y in range(3):
+                    if isinstance(self.get_game(x, y), Color):
+                        continue
+                    for move in self.get_game(x, y).possible_moves():
+                        yield (x, y), move
+        else:
+            for move in self.get_game(*self.__next_move).possible_moves():
+                yield self.__next_move, move
+
+    def moveRandom(self):
+        moves = list(self.possible_moves())
+        if len(moves) == 0:
+            return getOpponent(self.__current_move)
+        ind = randint(0, len(moves) - 1)
+        return self.move(moves[ind])
+
+    def move(self, mv):
+        (x, y), (r, c) = mv
+        self.make_move(x, y, r, c)
+        if self.get_winner() != Color.N:
+            return self.__current_move
+        moves = list(self.possible_moves())
+        if len(moves) == 0:
+            return getOpponent(self.__current_move)
+        return Color.N
+
