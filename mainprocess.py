@@ -131,5 +131,3 @@ class Game:
                             ttk.Button(self.__frames[-1][-1], text="", command=self.tap_button(row_, column_, r, c),
                                        width=3))
                         self.__buttons[-1][-1].grid(column=c, row=r, sticky="NESW")
-
-        # print(games, buttons)
