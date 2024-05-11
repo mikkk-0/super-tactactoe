@@ -82,7 +82,7 @@ class TicTacToe:
     def possible_moves(self):
         for x in range(3):
             for y in range(3):
-                if self.get_color(x, y) != Color.N:
+                if self.get_color(x, y) != "":
                     continue
                 yield x, y
 
@@ -101,7 +101,7 @@ class SuperTicTacToe:
         winner = self.get_game(x, y).get_winner()
         if winner != Color.N:
             self.__board[x][y] = winner
-        if not isinstance(self.get_game(r, c), Color) and len(self.get_game(r, c).possible_moves()) != 0:
+        if not isinstance(self.get_game(r, c), Color) and len(list(self.get_game(r, c).possible_moves())) != 0:
             self.__next_move = (r, c)
         else:
             self.__next_move = (-1, -1)

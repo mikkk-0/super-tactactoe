@@ -122,7 +122,7 @@ class UCT:
 
         while True:
             elapsed = None
-            for i in range(100):
+            for i in range(500):
                 self.run()
                 elapsed = datetime.now() - start
                 if elapsed.seconds >= self.__maxTime:
