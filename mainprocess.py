@@ -9,7 +9,8 @@ from copy import deepcopy
 class Game:
     def __init__(self):
         self.__root = self.__buttons = self.__board = self.__frames \
-            = self.__game = self.__commands = self.__ex = None
+            = self.__game = self.__commands = self.__ex\
+            = self.__d_label = self.__d_scale = None
         self.__difficulty = 0
 
     def changeDiff(self, newVal):
@@ -18,6 +19,9 @@ class Game:
 
     def process(self):
         self.__root = Tk()
+        self.__root.title("Super TicTacToe by mik_")
+        self.__root.resizable(False, False)
+
         self.__buttons = []
         self.__board = Frame(self.__root)
         self.__frames = []
@@ -29,7 +33,7 @@ class Game:
 
         self.__d_label.grid(row = 0)
 
-        self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.9999, length=200, command=self.changeDiff)
+        self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.0, length=200, command=self.changeDiff)
 
         self.__d_scale.grid(row=1)
 
@@ -40,7 +44,7 @@ class Game:
         self.__root.mainloop()
 
     @staticmethod
-    def color_str(winner):
+    def color_str(winner: Color) -> str:
         return 'X' if winner == Color.X else 'O'
 
     def check_global(self):
@@ -55,15 +59,17 @@ class Game:
             # print(f"GLOBAL WIN: {Game.color_str(winner)}")
             winner = Game.color_str(winner)
             showinfo(title="GAME OVER", message=f"WINNER: {winner}")
-            self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.9999, length=200, command=self.changeDiff)
+            self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.0, length=200, command=self.changeDiff)
             self.__d_scale.grid(row=1)
+            self.__d_scale["value"] = self.__difficulty
             return True
         else:
             moves = list(self.__game.possible_moves())
             if len(moves) == 0:
                 showinfo(title="GAME OVER", message=f"TIE!")
-                self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.9999, length=200, command=self.changeDiff)
+                self.__d_scale = ttk.Scale(self.__commands, from_=0.0, to=2.0, length=200, command=self.changeDiff)
                 self.__d_scale.grid(row=1)
+                self.__d_scale["value"] = self.__difficulty
                 return True
         return False
 
@@ -85,7 +91,7 @@ class Game:
                     if self.check_global():
                         return
                 else:
-                    self.__buttons[x * 3 + y][3 * r + c]["text"] = winner.get_color(r, c)
+                    self.__buttons[x * 3 + y][3 * r + c]["text"] = Game.color_str(winner.get_color(r, c))
                 if self.__game.is_any():
                     for frs in self.__frames:
                         for frame in frs:
@@ -101,6 +107,7 @@ class Game:
         return f
 
     def restart(self):
+        self.__root.geometry("374x506")
         self.__board.destroy()
         self.__game = SuperTicTacToe()
         self.__board = ttk.Frame(self.__root, padding=10, relief="groove")

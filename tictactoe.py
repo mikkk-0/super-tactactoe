@@ -25,7 +25,7 @@ class TicTacToe:
         return True
 
     def get_color(self, x, y):
-        return 'X' if self.__board[x][y] == Color.X else ('O' if self.__board[x][y] == Color.O else "")
+        return self.__board[x][y]
 
     @staticmethod
     def get_pos():
@@ -82,7 +82,7 @@ class TicTacToe:
     def possible_moves(self):
         for x in range(3):
             for y in range(3):
-                if self.get_color(x, y) != "":
+                if self.get_color(x, y) != Color.N:
                     continue
                 yield x, y
 

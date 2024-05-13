@@ -116,7 +116,7 @@ class UCT:
         if self.__maxTime == 0:
             moves = list(self.__game.possible_moves())
             if len(moves) != 0:
-                ind = randint(0, len(moves))
+                ind = randint(0, len(moves) - 1)
                 return moves[ind]
         start = datetime.now()
 
